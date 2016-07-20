@@ -1,3 +1,5 @@
+-- psql restaurant_db2;
+
 -- create a table for restaurant
 CREATE TABLE restaurant (
   id serial UNIQUE,
@@ -67,3 +69,112 @@ from
   review
 where
   reviewer.id = review.author and restaurant.id = review.restaurant_id;
+
+-- 1. get avg stars by restaurant(restaurant_name, average star ratings)
+
+select
+  restaurant.id,
+  avg(review.stars) as average_stars,
+  restaurant.name as restaurant_name
+from
+  restaurant,
+  reviewer,
+  review
+where
+  reviewer.id = review.author and restaurant.id = review.restaurant_id
+group by
+  restaurant.id, restaurant.name
+  ;
+
+-- 2. get the average stars by user (user name, average star rating)
+
+select
+  reviewer.id,
+  reviewer.name,
+  avg(review.stars) as avg
+
+from
+  restaurant,
+  reviewer,
+  review
+where
+  reviewer.id = review.author and restaurant.id = review.restaurant_id
+group by
+  reviewer.id, reviewer.name
+;
+
+-- 3. get the lowest star rating for each user (user name, lowest star rating)
+select
+  reviewer.id,
+  reviewer.name,
+  min(review.stars) as min_stars
+
+from
+  restaurant,
+  reviewer,
+  review
+where
+  reviewer.id = review.author and restaurant.id = review.restaurant_id
+group by
+  reviewer.id, reviewer.name
+;
+
+-- 4. get the number of reviews by restaurant (restaurant name, review count)
+
+select
+  restaurant.name as restaurant_name,
+  count(review.review) as review
+from
+  restaurant,
+  reviewer,
+  review
+where
+  reviewer.id = review.author and restaurant.id = review.restaurant_id
+group by
+  review.id, restaurant.name
+;
+
+-- 5. get the number of restaurants in each category (category name, restaurant count)
+select
+  restaurant.name as restaurant_name,
+  restaurant.category as restaurant_category,
+  count(restaurant.name) as restaurant_count
+from
+  restaurant,
+  reviewer,
+  review
+where
+  reviewer.id = review.author and restaurant.id = review.restaurant_id
+group by
+  review.id, restaurant.name, restaurant.category
+;
+
+-- 6. get number of 5 star reviews by restaurant (restaurant name, 5-star count)
+select
+  restaurant.name as restaurant_name,
+  restaurant.category as restaurant_category,
+  count(review.stars) as stars
+from
+  restaurant,
+  reviewer,
+  review
+where
+  reviewer.id = review.author and restaurant.id = review.restaurant_id
+group by
+  review.id, restaurant.name, review.stars, restaurant.category
+;
+
+-- 7. average star rating for a food category (category name, average star rating)
+select
+  restaurant.name as restaurant_name,
+  restaurant.category as restaurant_category,
+  avg(review.stars) as stars
+from
+  restaurant,
+  reviewer,
+  review
+where
+  reviewer.id = review.author and restaurant.id = review.restaurant_id
+group by
+  review.id, restaurant.name, review.stars, restaurant.category
+;
